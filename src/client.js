@@ -1,1 +1,0 @@
-// allt som har med varje enskild användare(klient) att göra
