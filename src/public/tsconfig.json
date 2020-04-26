@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "target": "es6",
+    "module": "esnext",
+    "sourceMap": true,
+    "jsx": "react",
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "../../dist/public",
+    "allowSyntheticDefaultImports": true
+  },
+  "files": [
+    "./index.ts"
+  ]
+}

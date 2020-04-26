@@ -1,0 +1,20 @@
+{
+"compileOnSave": true,
+    "compilerOptions": {
+        "incremental": true,
+        "module": "commonjs",
+        "lib": [
+            "es2015",
+            "dom"
+        ],
+        "target": "es6",
+        "moduleResolution": "node",
+        "outDir": "../dist",
+        "noEmit": false,
+        "strict": true,
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "baseUrl": "."
+    },
+    "files": ["./server.ts"]
+}
