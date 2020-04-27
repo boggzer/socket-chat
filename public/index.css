@@ -1,0 +1,71 @@
+body {
+    margin: 0;
+    background: #222222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    color: white;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+input {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.5rem;
+}
+
+button {
+    font-size: 1.2rem;
+    border-radius: 8px;
+    border: none;
+    background: rgb(55, 209, 183);
+    padding: 1rem;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.chat.ui {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+}
+
+.chat.ui ul {
+    flex: 1
+}
+
+.chat.ui form {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+ul {
+    list-style: none;
+}
+
+.join ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding: 0;
+}
+
+.roomChoice {
+    background-color: rgb(55, 209, 183);
+    color: black;
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+}

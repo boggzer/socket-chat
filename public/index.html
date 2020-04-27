@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="index.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <form class="join ui">
+        <input type="text" placeholder="Enter your nic">
+        <ul>
+            <li class="roomChoice">Best-Room</li>
+            <li class="roomChoice">Worst-Room</li>
+        </ul>
+        <button>Join Room</button>
+    </form>
+
+
+    <div class="chat ui hidden">
+        <ul id="theMessageBoard">
+            <!--Messages should be here-->
+        </ul>
+        <form>
+            <input placeholder="type a message" type="text" name="" id="">
+            <button>send</button>
+        </form>
+    </div>
+</body>
+</html>
