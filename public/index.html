@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,25 +9,46 @@
     <script src="index.js"></script>
     <title>Document</title>
 </head>
-<body>
-    <form class="join ui">
-        <input type="text" placeholder="Enter your nic">
-        <ul>
-            <li class="roomChoice">Best-Room</li>
-            <li class="roomChoice">Worst-Room</li>
-        </ul>
-        <button>Join Room</button>
-    </form>
 
+<body>
+    <div class="join">
+        <form class="join ui">
+            <h2>Hello new user!</h2>
+            <!-- <div class="room-and-name-inputs"> -->
+            <input type="text" class="username-input" placeholder="Enter username">
+            <button class="create-room">Create new room</button>
+            <p class="join-existing-room">or join an existing room:</p>
+
+            <!-- </div> -->
+        </form>
+        <div class="join-room">
+            <form class="create-room hidden">
+                <input type="text" class="room-name-input" placeholder="Room name">
+                <label for="add-password">
+                    Lock room
+                    <input name="add-password" type="checkbox" class="add-password">
+                </label>
+                <button type="submit" class="join-created-room">Join new room</button>
+            </form>
+            <form class="join-existing-room">
+                <ul>
+                    <li class="roomChoice">Best-Room</li>
+                    <li class="roomChoice">Worst-Room</li>
+                </ul>
+                <button type="submit">Join Room</button>
+            </form>
+        </div>
+    </div>
 
     <div class="chat ui hidden">
         <ul id="theMessageBoard">
             <!--Messages should be here-->
         </ul>
-        <form>
-            <input placeholder="type a message" type="text" name="" id="">
-            <button>send</button>
+        <form class="message-form">
+            <input placeholder="type a message" class="message-input" type="text" name="" id="">
+            <button type="submit" class="message-input">send</button>
         </form>
     </div>
 </body>
+
 </html>
