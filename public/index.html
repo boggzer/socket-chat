@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css">
     <script src="/socket.io/socket.io.js"></script>
-    <script src="index.js"></script>
+    <script type="module" src="index.js"></script>
     <title>Document</title>
 </head>
 
@@ -28,14 +28,25 @@
                     Lock room
                     <input name="add-password" type="checkbox" class="add-password">
                 </label>
+                <label for="type-password" class="password-field hidden">
+                    Password must be 3-10 characters:
+                    <input name="type-password" class="type-password" type="password" minlength="3" maxlength="10"
+                        placeholder="Password">
+                </label>
                 <button type="submit" class="join-created-room">Join new room</button>
             </form>
+
             <form class="join-existing-room">
                 <ul>
                     <li class="roomChoice">Best-Room</li>
                     <li class="roomChoice">Worst-Room</li>
                 </ul>
                 <button type="submit">Join Room</button>
+            </form>
+            <form class="join-secret-room hidden">
+                <p>Enter password to enter the secret chat room "<span class="secret-room-id"></span>"</p>
+                <input type="password" placeholder="Enter password">
+                <button type="submit">Join secret room</button>
             </form>
         </div>
     </div>
