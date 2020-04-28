@@ -117,21 +117,36 @@ function onCreateRoom(event) {
 }
 
 function onJoinNewRoom(event) {
+/**
+ * Join new created room
+ * @param {Event} event 
+ */
+function onJoinCreatedRoom(event) {
     event.preventDefault()
+    
     const username = document.querySelector(".username-input").value
     const roomName = document.querySelector('.room-name-input').value
-    const room = new Room(roomName, username)
+    
+    const passwordCheck = document.querySelector('.add-password').checked
+    const passwordField = document.querySelector('.password-field')
 
-    socket.emit('join room', { username, room })
+    let room;
 
+    // If locked is checked and event is submit
+    if (passwordCheck && event.type !== 'change') {
+        room = new Room(roomName, username, 'locked')
+        socket.emit('join room', { username, room })
+    } else if (event.type == 'change') {
+        toggleDisplay(passwordField)
+        return;
+    } else {
+        // Default room
+        room = new Room(roomName, username, 'open')
+        socket.emit('join room', { username, room })
+    }
 }
 
-function loadChatUI(data) {
+function loadChatUI() {
     document.querySelector(".chat.ui").classList.remove("hidden")
     document.querySelector(".join.ui").classList.add("hidden")
-}
-
-const onMessageReceived = ({ username, message }) => {
-    console.log("onmessagerecieved", "name:", username, "msg:", message)
-
 }
