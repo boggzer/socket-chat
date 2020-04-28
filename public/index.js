@@ -84,10 +84,15 @@ function onJoinRoom(event) {
     }
 }
 
+/**
+ * Sends message to server
+ * @param {*} event 
+ */
 function onSendMessage(event) {
     event.preventDefault()
     const messageInput = document.querySelector('input.message-input')
     const message = messageInput.value
+
     if (event.type === 'keyup' && event.keyCode === 13 || event.type === 'click') {
         if (message === "") {
             return;
@@ -99,10 +104,11 @@ function onSendMessage(event) {
     }
 }
 
-function createLockedRoom() {
-    
-}
-
+/**
+ * Updates chat box in DOM with new message
+ * @param {username} username message author
+ * @param {message} message recieved message
+ */
 function updateChat({ username, message }) {
     const ul = document.getElementById("theMessageBoard")
     const li = document.createElement('li')
@@ -110,13 +116,28 @@ function updateChat({ username, message }) {
     ul.append(li)
 }
 
+/**
+ * Renders create room form
+ * @param {Event} event 
+ */
 function onCreateRoom(event) {
     event.preventDefault()
     document.querySelector('form.create-room').classList.remove('hidden')
     document.querySelectorAll('.join-existing-room, button.create-room').forEach(element => element.classList.add('hidden'))
 }
 
-function onJoinNewRoom(event) {
+/**
+ * Toggle add/remove of the class 'hidden' to hide/display html-element
+ * @param {HTMLElement} htmlElement 
+ */
+function toggleDisplay(htmlElement) {
+    if (htmlElement.classList.contains('hidden')) {
+        htmlElement.classList.remove('hidden')
+    } else {
+        htmlElement.classList.add('hidden')
+    }
+}
+
 /**
  * Join new created room
  * @param {Event} event 
