@@ -42,6 +42,7 @@ function setupEventListeners() {
     const joinForm = document.querySelector('form.join-existing-room')
     joinForm.addEventListener('submit', onJoinRoom)
 
+    // Handles checking if room exists on input
     const roomInput = document.querySelector('.room-name-input')
     roomInput.addEventListener('input', checkIfRoomExists)
     roomInput.addEventListener('blur', checkIfRoomExists)
@@ -93,7 +94,7 @@ function onJoinRoom(event) {
 
 /**
  * Sends message to server
- * @param {*} event 
+ * @param {Event} event 
  */
 function onSendMessage(event) {
     event.preventDefault()
@@ -205,22 +206,25 @@ function onError(errorType) {
             break;
     }
 }
+
+/**
+ * Checks whether room already exists or not from room input field
+ * @param {Event} event 
+ */
 function checkIfRoomExists(event) {
     let found = ''
     const errorMessage = document.querySelector('span.error-message')
     socket.emit('check if exists', event.target.value, (data) => {
         found = data;
         if (found === true) {
-
             errorMessage.classList.replace('hidden', 'fadeAnimation')
             errorMessage.innerHTML = `The room "${event.target.value}" already exists. Please choose another room name.
-            (Unless you want to join the room...)`
+            (Unless you'd like to join the room...)`
             event.target.classList.add('found')
         } else {
             errorMessage.classList.replace('fadeAnimation', 'hidden')
             errorMessage.innerHTML = ''
             event.target.classList.remove('found')
         }
-        console.log(found, 'found')
     })
 }
