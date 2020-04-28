@@ -1,5 +1,4 @@
 const socket = io()
-
 class Room {
     constructor(id, usersOnline, isOpen, password) {
         this.id = id;
@@ -60,9 +59,13 @@ function setupEventListeners() {
     const createRoomForm = document.querySelector('.join-room>.create-room')
     createRoomForm.addEventListener('submit', onJoinCreatedRoom)
 
+    const passwordCheck = document.querySelector('.add-password')
+    passwordCheck.addEventListener('change', onJoinCreatedRoom)
+
     // Socket io events
     socket.on('join successful', loadChatUI)
     socket.on('update chat', updateChat)
+    socket.on('on error', onError)
 }
 
 /**
@@ -144,30 +147,57 @@ function toggleDisplay(htmlElement) {
  */
 function onJoinCreatedRoom(event) {
     event.preventDefault()
-    
     const username = document.querySelector(".username-input").value
     const roomName = document.querySelector('.room-name-input').value
     
     const passwordCheck = document.querySelector('.add-password').checked
     const passwordField = document.querySelector('.password-field')
-
+    
     let room;
-
+    
     // If locked is checked and event is submit
     if (passwordCheck && event.type !== 'change') {
-        room = new Room(roomName, username, 'locked')
-        socket.emit('join room', { username, room })
+        const passwordInput = document.querySelector('.type-password')
+        const password = passwordInput.value
+        room = new Room(roomName, username, 'locked', password)
+        // Verify locked room (if exists or not)
+        socket.emit('verify locked room', { username, room })
     } else if (event.type == 'change') {
         toggleDisplay(passwordField)
         return;
     } else {
-        // Default room
+        // Default (open) room
         room = new Room(roomName, username, 'open')
         socket.emit('join room', { username, room })
     }
 }
 
 function loadChatUI() {
+    document.querySelector('form.create-room').classList.add('hidden')
     document.querySelector(".chat.ui").classList.remove("hidden")
     document.querySelector(".join.ui").classList.add("hidden")
+}
+
+/*
+* TODO: Fixa denna!
+* Handles and sends error messages
+* @param {string} errorType
+*/
+function onError(errorType) {
+   switch (errorType) {
+       case 'WRONG_PASSWORD':
+           alert(errorType)
+           // TODO: lägg till error-meddelande som visas vid fel angivet lösenord
+           break;
+       case 'SHORT_PASSWORD':
+           alert(errorType)
+           // TODO: lägg till error-meddelande som visas
+           break;
+       case 'ROOM_EXISTS':
+           alert(errorType)
+           // TODO: lägg till error-meddelande som visas
+           break;
+       default:
+           break;
+   }
 }
