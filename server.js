@@ -52,5 +52,18 @@ io.on('connection', (socket) => {
     })
 })
 
+/**
+ * Check if room exists in list of rooms
+ * @param {string} roomId id of room to check if it exists
+ * @returns {boolean}
+ */
+function roomExists(roomId) {
+    const exists = rooms.filter(room => room.id === roomId)
+    if (exists.length >= 1) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 server.listen(3000, () => console.log('Server is running on http://localhost:3000'))
