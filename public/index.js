@@ -1,16 +1,26 @@
 const socket = io()
 
 class Room {
-    constructor(id, usersOnline, isOpen) {
+    constructor(id, usersOnline, isOpen, password) {
         this.id = id;
         this.usersOnline = [usersOnline];
-        this.isOpen = isOpen;
+        this.isOpen = this.translateToBoolean(isOpen);
+        this.password = password;
+    }
+
+    translateToBoolean(isOpen) {
+        if (isOpen === 'open') {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 
+let roomChosen = "";
+
 window.addEventListener('load', () => {
     setupEventListeners()
-    roomChosen = "";
 
     let roomChoice = document.getElementsByClassName("roomChoice");
     for (let i = 0; i < roomChoice.length; i++) {
@@ -48,26 +58,30 @@ function setupEventListeners() {
 
     // Create and add room when create room form is submitted
     const createRoomForm = document.querySelector('.join-room>.create-room')
-    createRoomForm.addEventListener('submit', onJoinNewRoom)
+    createRoomForm.addEventListener('submit', onJoinCreatedRoom)
 
     // Socket io events
     socket.on('join successful', loadChatUI)
     socket.on('update chat', updateChat)
 }
 
+/**
+ * Join existing room
+ * @param {Event} event 
+ */
 function onJoinRoom(event) {
     event.preventDefault()
 
     const username = document.querySelector(".username-input").value
-    const room = roomChosen;
+    const room = new Room(roomChosen, username, 'open');
 
     if (room == "" || room == null) {
         alert("Please choose a room")
     }
     else {
+        
         socket.emit('join room', { username, room })
     }
-
 }
 
 function onSendMessage(event) {
