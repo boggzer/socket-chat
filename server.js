@@ -40,8 +40,14 @@ io.on('connection', (socket) => {
                 joinRoom(socket, data)
             } else { socket.emit('on error', statusCode.WRONG_PASSWORD) }
         } else {
-            joinRoom(socket, data)
+            if (data.room.password.length >= 3) {
+                joinRoom(socket, data)
+            } else { socket.emit('on error', statusCode.SHORT_PASSWORD) }
         }
+    })
+
+    socket.on('check if exists', (roomId, fn) => {
+        fn(roomExists(roomId))
     })
 })
 
