@@ -51,6 +51,7 @@ io.on('connection', (socket) => {
         socket.on('message', (message) => {
             // Broadcast message to all clients in the room
             io.to(data.room.id).emit('update chat', { username: socket.username, message })
+            console.log(rooms)
         })
     })
 })
@@ -61,6 +62,9 @@ io.on('connection', (socket) => {
  * @returns {boolean}
  */
 function roomExists(roomId) {
+
+    // TODO: lägg till funktion som tar bort (splice) rum när det är tomt här kanske?
+
     const exists = rooms.filter(room => room.id === roomId)
     if (exists.length >= 1) {
         return true;
