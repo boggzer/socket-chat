@@ -1,10 +1,12 @@
+// Rerenders lists of existing rooms every second in case it has changed
+setInterval(function () {
+    fetch("http://localhost:3000/rooms").then((response) => {
+        return response.json()
+    }).then((rooms) => {
+        printRooms(rooms)
+    })
+}, 1000);
 
-
-fetch("http://localhost:3000/rooms").then((response) => {
-    return response.json()
-}).then((rooms) => {
-    printRooms(rooms)
-})
 
 const socket = io()
 class Room {
@@ -164,9 +166,11 @@ function onJoinRoom(event) {
 
 function printRooms(rooms) {
 
+
     let unlockedRoomTable = document.querySelector(".unlockedRoomTable")
     let lockedRoomTable = document.querySelector(".lockedRoomTable")
-
+    unlockedRoomTable.innerHTML = '<tr class="roomTag"><th>Unlocked Rooms</th></tr>'
+    lockedRoomTable.innerHTML = '<tr class="roomTag"><th>Locked Rooms</th></tr>'
 
     rooms.forEach(rooms => {
         if (rooms.isOpen) {
