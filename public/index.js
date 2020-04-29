@@ -295,9 +295,13 @@ function loadChatUI(socket) {
 }
 
 function loadMenu() {
+    document.querySelector('.add-password').checked = false
+    document.querySelector('.room-name-input').value = ''
+    document.querySelector('.type-password-locked-room').value = ''
+    document.querySelector('.type-password').value = ''
     document.querySelector('h2').innerHTML = 'Hi there!<br /><span>Welcome to Socket Chat</span>'
     document.querySelectorAll('.join-room, button.create-room, .join-existing-room, .join.ui, .join').forEach(element => element.classList.remove('hidden'))
-    document.querySelectorAll('form.create-room, .chat.ui').forEach(element => element.classList.add('hidden'))
+    document.querySelectorAll('form.create-room, .chat.ui, .password-field').forEach(element => element.classList.add('hidden'))
     document.querySelector('.chat>h3').innerHTML = ''
 }
 
