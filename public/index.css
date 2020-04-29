@@ -102,6 +102,27 @@ span.error-message {
     display: flex;
 }
 
+.unlockedRoomTable, .lockedRoomTable {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.allRoomsLocked, .allRoomsUnlocked {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+
+.roomTag {
+border: 2px solid red;
+}
+
+.join-existing-room div {
+    display: flex;
+}
+
 @keyframes fade {
     0%   { opacity:  0; }
     7%   { opacity: 0.5 }

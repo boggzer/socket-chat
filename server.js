@@ -18,11 +18,17 @@ const users = [
 
 // Exempel på rum
 const rooms = [
-    { id: 'fooroom', usersOnline: ['Foo', 'Foobar'], isOpen: false, password: 'password' },
-    { id: 'barroom', usersOnline: ['Bar'], isOpen: true },
+    { id: 'Admin', usersOnline: ['Foo', 'Foobar'], isOpen: false, password: 'admin' },
+    { id: 'Public', usersOnline: ['Bar'], isOpen: true },
 ];
 
 app.use(express.static('public'))
+
+
+app.get("/rooms", (req, res) => {
+    res.json(rooms)
+})
+
 
 io.on('connection', (socket) => {
     // Default join a room function for open rooms

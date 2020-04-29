@@ -1,3 +1,11 @@
+
+
+fetch("http://localhost:3000/rooms").then((response) => {
+    return response.json()
+}).then((rooms) => {
+    printRooms(rooms)
+})
+
 const socket = io()
 class Room {
     constructor(id, usersOnline, isOpen, password) {
@@ -21,21 +29,47 @@ let roomChosen = "";
 window.addEventListener('load', () => {
     setupEventListeners()
 
-    let roomChoice = document.getElementsByClassName("roomChoice");
-    for (let i = 0; i < roomChoice.length; i++) {
-        roomChoice[i].addEventListener("click", () => {
+})
 
-            for (let y = 0; y < roomChoice.length; y++) {
-                roomChoice[y].style.backgroundColor = "rgb(55, 209, 183)"
+
+function addClickToRooms() {
+    let unlockedRoomTable = document.getElementsByClassName("allRoomsUnlocked");
+    let lockedRoomTable = document.getElementsByClassName("allRoomsLocked");
+
+    for (let i = 0; i < unlockedRoomTable.length; i++) {
+        unlockedRoomTable[i].addEventListener("click", () => {
+
+            for (let y = 0; y < unlockedRoomTable.length; y++) {
+                unlockedRoomTable[y].style.backgroundColor = "rgb(55, 209, 183)"
+            }
+            for (let o = 0; o < lockedRoomTable.length; o++) {
+                lockedRoomTable[o].style.backgroundColor = "rgb(55, 209, 183)"
             }
 
-            roomChosen = roomChoice[i].innerHTML;
-            roomChoice[i].style.backgroundColor = "red"
+            roomChosen = unlockedRoomTable[i].innerHTML;
+            unlockedRoomTable[i].style.backgroundColor = "red"
 
         })
     }
 
-})
+    for (let i = 0; i < lockedRoomTable.length; i++) {
+        lockedRoomTable[i].addEventListener("click", () => {
+
+            for (let y = 0; y < lockedRoomTable.length; y++) {
+                lockedRoomTable[y].style.backgroundColor = "rgb(55, 209, 183)"
+            }
+            for (let o = 0; o < unlockedRoomTable.length; o++) {
+                unlockedRoomTable[o].style.backgroundColor = "rgb(55, 209, 183)"
+            }
+
+            roomChosen = lockedRoomTable[i].innerHTML;
+            lockedRoomTable[i].style.backgroundColor = "red"
+
+        })
+    }
+
+    
+}
 
 function setupEventListeners() {
     // Join submit handler
@@ -80,16 +114,64 @@ function setupEventListeners() {
 function onJoinRoom(event) {
     event.preventDefault()
 
-    const username = document.querySelector(".username-input").value
-    const room = new Room(roomChosen, username, 'open');
+    let unlockedRoomTable = document.getElementsByClassName("allRoomsUnlocked");
+    let lockedRoomTable = document.getElementsByClassName("allRoomsLocked");
+    let roomLocked = "false";
 
-    if (room == "" || room == null) {
+    for (let i = 0; i < unlockedRoomTable.length; i++) {
+        if (unlockedRoomTable[i].innerHTML == roomChosen) {
+            console.log("open")
+            roomLocked = "open"
+        }
+    }
+    for (let y = 0; y < lockedRoomTable.length; y++) {
+        if (lockedRoomTable[y].innerHTML == roomChosen) {
+            console.log("closed")
+            roomLocked = "closed"
+        }
+    }
+
+    const username = document.querySelector(".username-input").value
+    const room = new Room(roomChosen, username, roomLocked);
+
+    if (room.id == "" || room.id == null) {
         alert("Please choose a room")
     }
     else {
         
         socket.emit('join room', { username, room })
     }
+}
+
+function printRooms(rooms) {
+
+    let unlockedRoomTable = document.querySelector(".unlockedRoomTable")
+    let lockedRoomTable = document.querySelector(".lockedRoomTable")
+
+    
+    rooms.forEach(rooms => {
+        if (rooms.isOpen) {
+            let roomBox = document.createElement("th")
+            let room = document.createElement("th")
+            room.innerText = rooms.id
+            room.className = "allRoomsUnlocked"
+    
+            roomBox.appendChild(room)
+            unlockedRoomTable.appendChild(roomBox)
+        }
+        else {
+            let roomBox = document.createElement("th")
+            let room = document.createElement("th")
+            room.innerText = rooms.id
+            room.className = "allRoomsLocked"
+    
+            roomBox.appendChild(room)
+            lockedRoomTable.appendChild(roomBox)
+        }
+
+        addClickToRooms()
+
+    })
 }
 
 /**
@@ -159,7 +241,7 @@ function onJoinCreatedRoom(event) {
     const passwordField = document.querySelector('.password-field')
     
     let room;
-    
+
     // If locked is checked and event is submit
     if (passwordCheck && event.type !== 'change') {
         const passwordInput = document.querySelector('.type-password')
@@ -181,6 +263,7 @@ function loadChatUI() {
     document.querySelector('form.create-room').classList.add('hidden')
     document.querySelector(".chat.ui").classList.remove("hidden")
     document.querySelector(".join.ui").classList.add("hidden")
+    document.querySelector(".join-room").classList.add("hidden")
 }
 
 /*
