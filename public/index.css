@@ -62,6 +62,31 @@ ul {
     list-style: none;
 }
 
+.found {
+    background-color: lightcoral;
+}
+
+span.error-message {
+    width: 150px;
+    margin: auto;
+    position: absolute;
+    margin-left: 30%;
+    color: black;
+    padding: 10px;
+    background-color: whitesmoke;
+    border-radius: 15px;
+}
+
+.invisible {
+    opacity: 0;
+    transition: opacity 150ms ease-in;
+}
+
+.opacity {
+    opacity: 1;
+    transition: opacity 150ms ease-in;
+}
+
 .join ul {
     display: flex;
     flex-direction: row;
@@ -97,3 +122,17 @@ border: 2px solid red;
 .join-existing-room div {
     display: flex;
 }
+
+@keyframes fade {
+    0%   { opacity:  0; }
+    7%   { opacity: 0.5 }
+    15%  { opacity:   1 }
+    90%  { opacity:   1 }
+    95%  { opacity: 0.8 }
+    100% { opacity:  0; }
+  }
+
+  .fadeAnimation {
+      opacity: 0;
+      animation: fade 4s ease;
+  }
