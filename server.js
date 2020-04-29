@@ -18,11 +18,17 @@ const users = [
 
 // Exempel på rum
 const rooms = [
-    { id: 'fooroom', usersOnline: ['Foo', 'Foobar'], isOpen: false, password: 'password' },
-    { id: 'barroom', usersOnline: ['Bar'], isOpen: true },
+    { id: 'Admin', usersOnline: ['Foo', 'Foobar'], isOpen: false, password: 'admin' },
+    { id: 'Public', usersOnline: ['Bar'], isOpen: true },
 ];
 
 app.use(express.static('public'))
+
+
+app.get("/rooms", (req, res) => {
+    res.json(rooms)
+})
+
 
 io.on('connection', (socket) => {
     console.log('Client connected: ', socket.id)
@@ -39,12 +45,12 @@ io.on('connection', (socket) => {
                 io.to(data.room.id).emit(
                     'update chat', {
                     username: socket.username,
-                    message: `${roomExists(data.room.id) ? 'Has joined the room!' : `Created the room "${data.room.id}"`}`
+                    message: `${roomExists(data.room.id) ? 'Has joined the room!': `Created the room "${data.room.id}"`}`
                 })
                 // Add new open room to list of rooms if not already included
                 roomExists(data.room.id) ? null : rooms.push(data.room)
             })
-        } else {
+        } else  {
             // TODO: Add function for entering locked chat room
         }
 

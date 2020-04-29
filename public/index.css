@@ -76,3 +76,24 @@ ul {
     padding: 1rem;
     display: flex;
 }
+
+.unlockedRoomTable, .lockedRoomTable {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.allRoomsLocked, .allRoomsUnlocked {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+
+.roomTag {
+border: 2px solid red;
+}
+
+.join-existing-room div {
+    display: flex;
+}
