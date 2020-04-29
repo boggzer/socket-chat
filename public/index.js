@@ -1,9 +1,8 @@
 const socket = io()
-
 class Room {
     constructor(id, usersOnline, isOpen, password) {
         this.id = id;
-        this.usersOnline = [usersOnline];
+        this.usersOnline = [].push(usersOnline);
         this.isOpen = this.translateToBoolean(isOpen);
         this.password = password;
     }
@@ -43,6 +42,11 @@ function setupEventListeners() {
     const joinForm = document.querySelector('form.join-existing-room')
     joinForm.addEventListener('submit', onJoinRoom)
 
+    // Handles checking if room exists on input
+    const roomInput = document.querySelector('.room-name-input')
+    roomInput.addEventListener('input', checkIfRoomExists)
+    roomInput.addEventListener('blur', checkIfRoomExists)
+
     // Send message when enter is pressed in input field
     const messageInput = document.querySelector('input.message-input')
     messageInput.addEventListener('keyup', onSendMessage)
@@ -60,9 +64,13 @@ function setupEventListeners() {
     const createRoomForm = document.querySelector('.join-room>.create-room')
     createRoomForm.addEventListener('submit', onJoinCreatedRoom)
 
+    const passwordCheck = document.querySelector('.add-password')
+    passwordCheck.addEventListener('change', onJoinCreatedRoom)
+
     // Socket io events
     socket.on('join successful', loadChatUI)
     socket.on('update chat', updateChat)
+    socket.on('on error', onError)
 }
 
 /**
@@ -86,7 +94,7 @@ function onJoinRoom(event) {
 
 /**
  * Sends message to server
- * @param {*} event 
+ * @param {Event} event 
  */
 function onSendMessage(event) {
     event.preventDefault()
@@ -144,30 +152,79 @@ function toggleDisplay(htmlElement) {
  */
 function onJoinCreatedRoom(event) {
     event.preventDefault()
-    
     const username = document.querySelector(".username-input").value
     const roomName = document.querySelector('.room-name-input').value
     
     const passwordCheck = document.querySelector('.add-password').checked
     const passwordField = document.querySelector('.password-field')
-
+    
     let room;
-
+    
     // If locked is checked and event is submit
     if (passwordCheck && event.type !== 'change') {
-        room = new Room(roomName, username, 'locked')
-        socket.emit('join room', { username, room })
+        const passwordInput = document.querySelector('.type-password')
+        const password = passwordInput.value
+        room = new Room(roomName, username, 'locked', password)
+        // Verify locked room (if exists or not)
+        socket.emit('verify locked room', { username, room })
     } else if (event.type == 'change') {
         toggleDisplay(passwordField)
         return;
     } else {
-        // Default room
+        // Default (open) room
         room = new Room(roomName, username, 'open')
         socket.emit('join room', { username, room })
     }
 }
 
 function loadChatUI() {
+    document.querySelector('form.create-room').classList.add('hidden')
     document.querySelector(".chat.ui").classList.remove("hidden")
     document.querySelector(".join.ui").classList.add("hidden")
+}
+
+/*
+* TODO: Fixa denna!
+* Handles and sends error messages
+* @param {string} errorType
+*/
+function onError(errorType) {
+    switch (errorType) {
+        case 'WRONG_PASSWORD':
+            alert(errorType)
+            // TODO: lägg till error-meddelande som visas vid fel angivet lösenord
+            break;
+        case 'SHORT_PASSWORD':
+            alert(errorType)
+            // TODO: lägg till error-meddelande som visas
+            break;
+        case 'ROOM_EXISTS':
+            alert(errorType)
+            // TODO: lägg till error-meddelande som visas
+            break;
+        default:
+            break;
+    }
+}
+
+/**
+ * Checks whether room already exists or not from room input field
+ * @param {Event} event 
+ */
+function checkIfRoomExists(event) {
+    let found = ''
+    const errorMessage = document.querySelector('span.error-message')
+    socket.emit('check if exists', event.target.value, (data) => {
+        found = data;
+        if (found === true) {
+            errorMessage.classList.replace('hidden', 'fadeAnimation')
+            errorMessage.innerHTML = `The room "${event.target.value}" already exists. Please choose another room name.
+            (Unless you'd like to join the room...)`
+            event.target.classList.add('found')
+        } else {
+            errorMessage.classList.replace('fadeAnimation', 'hidden')
+            errorMessage.innerHTML = ''
+            event.target.classList.remove('found')
+        }
+    })
 }
