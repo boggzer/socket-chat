@@ -4,16 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="./custom-checkbox.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="/socket.io/socket.io.js"></script>
     <script type="module" src="index.js"></script>
-    <title>Document</title>
+    <title>Socket Chat</title>
 </head>
 
 <body>
     <div class="join">
         <form class="join ui">
-            <h2>Hello new user!</h2>
+            <h2>Hi there!<br /><span>Welcome to Socket Chat</span></h2>
             <!-- <div class="room-and-name-inputs"> -->
             <input type="text" class="username-input" placeholder="Enter username">
             <button class="create-room">Create new room</button>
@@ -25,16 +27,16 @@
             <form class="create-room hidden">
                 <input type="text" class="room-name-input" placeholder="Room name">
                 <span class="error-message hidden"></span>
-                <label for="add-password">
-                    Lock room
-                    <input name="add-password" type="checkbox" class="add-password">
-                </label>
+                <input name="add-password" id="add-password" type="checkbox" class="add-password css-checkbox">
+                <label for="add-password" class="css-label">Lock room</label>
+
                 <label for="type-password" class="password-field hidden">
                     Password must be 3-10 characters:
                     <input name="type-password" class="type-password" type="password" minlength="3" maxlength="10"
                         placeholder="Password">
                 </label>
-                <button type="submit" class="join-created-room">Join new room</button>
+                <button type="submit" class="join-created-room">Join created room</button>
+                <button type="button" class="back">Back to menu</button>
             </form>
 
             <form class="join-existing-room">
@@ -50,6 +52,10 @@
                         </tr>
                     </table>
                 </div>
+                <label for="type-password-locked-room" class="password-field-locked-room hidden">
+                    <input name="type-password-locked-room" class="type-password-locked-room" type="password"
+                        minlength="3" maxlength="10" placeholder="Password">
+                </label>
                 <button type="submit">Join Room</button>
             </form>
             <form class="join-secret-room hidden">
@@ -61,6 +67,8 @@
     </div>
 
     <div class="chat ui hidden">
+        <button type="button" class="back">Back to menu</button>
+        <h3 class="room-name"></h3>
         <ul id="theMessageBoard">
             <!--Messages should be here-->
         </ul>
@@ -69,6 +77,7 @@
             <button type="submit" class="message-input">send</button>
         </form>
     </div>
+    <footer>Icons by <a href="https://icons8.com/">icons8</a></footer>
 </body>
 
 </html>

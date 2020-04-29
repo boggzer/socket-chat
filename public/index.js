@@ -86,6 +86,12 @@ function setupEventListeners() {
     roomInput.addEventListener('input', checkIfRoomExists)
     roomInput.addEventListener('blur', checkIfRoomExists)
 
+    // Back to menu buttons
+    const backToMenuButton = document.querySelectorAll('button.back')
+    backToMenuButton.forEach((button) => {
+        button.addEventListener('click', loadMenu)
+    })
+
     // Send message when enter is pressed in input field
     const messageInput = document.querySelector('input.message-input')
     messageInput.addEventListener('keyup', onSendMessage)
@@ -225,6 +231,7 @@ function updateChat({ username, message }) {
  */
 function onCreateRoom(event) {
     event.preventDefault()
+    document.querySelector('h2').innerHTML = 'Create chat room'
     document.querySelector('form.create-room').classList.remove('hidden')
     document.querySelectorAll('.join-existing-room, button.create-room')
         .forEach(element => element.classList.add('hidden'))
@@ -278,12 +285,16 @@ function onJoinCreatedRoom(event) {
 }
 
 function loadChatUI(socket) {
-    document.querySelector('.join').classList.add('hidden')
-    document.querySelector('form.create-room').classList.add('hidden')
+    document.querySelectorAll('.join, form.create-room, .join.ui, .join-room').forEach(element => element.classList.add('hidden'))
     document.querySelector(".chat.ui").classList.remove("hidden")
     document.querySelector('.chat>h3').innerHTML = socket
-    document.querySelector(".join.ui").classList.add("hidden")
-    document.querySelector(".join-room").classList.add("hidden")
+}
+
+function loadMenu() {
+    document.querySelector('h2').innerHTML = 'Hi there!<br /><span>Welcome to Socket Chat</span>'
+    document.querySelectorAll('.join-room, button.create-room, .join-existing-room, .join.ui, .join').forEach(element => element.classList.remove('hidden'))
+    document.querySelectorAll('form.create-room, .chat.ui').forEach(element => element.classList.add('hidden'))
+    document.querySelector('.chat>h3').innerHTML = ''
 }
 
 /*
