@@ -321,14 +321,8 @@ function loadChatUI(socket) {
 
 function loadMenu() {
     if (document.querySelector('.chat').classList.contains('hidden') === false) {
-        socket.emit('leave room', socket.username)
+        location.reload()
     }
-    document.querySelector('.add-password').checked = false
-    document.querySelectorAll('.room-name-input, .type-password-locked-room, .type-password').forEach(element => element.value = '')
-    document.querySelector('h2').innerHTML = 'Hi there!<br /><span>Welcome to Socket Chat</span>'
-    document.querySelectorAll('.join-room, button.create-room, .join-existing-room, .join.ui, .join').forEach(element => element.classList.remove('hidden'))
-    document.querySelectorAll('form.create-room, .chat.ui, .password-field, .password-field-locked-room').forEach(element => element.classList.add('hidden'))
-    document.querySelector('.chat>span>h3').innerHTML = ''
 }
 
 /*
