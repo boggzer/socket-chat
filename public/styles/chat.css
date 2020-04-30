@@ -1,0 +1,77 @@
+.chat.ui {
+    display: flex;
+    height: calc(100% - 50px);
+    width: 100%;
+    margin-bottom: 50px;
+    transition: 2s all ease;
+    justify-self: flex-start;
+    flex-direction: column;
+}
+
+.chat.ui > span {
+    display: flex;
+}
+
+.chat.ui > span > button {
+    flex: 1;
+}
+
+.chat.ui > span > h3 {
+    flex: 9;
+}
+
+.chat.ui ul {
+    flex: 1
+}
+
+li {
+    width: 100%;
+}
+
+.chat.ui form {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.chat button.back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 15px;
+}
+
+.user {
+    font-weight: 500;
+}
+
+#theMessageBoard {
+    max-height: 80vh;
+    overflow: scroll;
+    width: 80%;
+    max-width: 450px;
+    padding: 1rem;
+    border-radius: 15px;
+    background-color: whitesmoke;
+    min-width: calc(50% - 300px);
+    margin: 20px auto;
+    font-size: 17px;
+}
+
+.room-name {
+    color: whitesmoke;
+}
+
+.message-form, .message-input {
+    margin: 1%;
+}
+
+ul {
+    width: 100%;
+    padding: 50px;
+    list-style: none;
+}
+
+input:not(input.message-input) {
+    width: calc(100% - 2rem);
+}

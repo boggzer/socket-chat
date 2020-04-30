@@ -6,18 +6,16 @@ const app = express()
 const server = http.createServer(app)
 const io = socketIO(server)
 
-// Lite statuskoder, kanske inte ska använda dessa sen
-const statusCode = require('./public/status-codes.js')
+const port = process.env.PORT || 3000
+const host = process.env.HOST || 'localhost'
 
-
-// Exempel på rum
+// Room examples
 const rooms = [
     { id: 'Admin', usersOnline: [0], isOpen: false, password: 'admin' },
     { id: 'Public', usersOnline: [0], isOpen: true },
 ];
 
 app.use(express.static('public'))
-
 
 app.get("/rooms", (req, res) => {
     res.json(rooms)
@@ -35,26 +33,22 @@ io.on('connection', (socket) => {
         // If room exists
         if (roomExists(data.room.id)) {
             const foundIndex = rooms.findIndex(room => room.id === data.room.id)
-            // Kolla om lösenordet matchar V med console.log() nedan
-            // console.log("match: ", data.room.password === rooms[foundIndex].password, "entered password: ", data.room.password, ": ", rooms[foundIndex].password)
             // Join room if the entered password matches, otherwise show error message
             if (data.room.password === rooms[foundIndex].password) {
                 joinRoom(socket, data)
-            } else { socket.emit('on error', statusCode.WRONG_PASSWORD) }
+            } else { socket.emit('on error', 'Wrong password') }
         } else {
-
             // If room does not exist in list of rooms, join/create a room like normal
             if (data.room.password.length >= 3) {
                 joinRoom(socket, data)
-            } else { socket.emit('on error', statusCode.SHORT_PASSWORD) }
+            } else { socket.emit('on error', 'Password must be at least 3 characters') }
         }
     })
-
     // Check if requested room already exists and sends to callback function
     socket.on('check if exists', (roomId, fn) => {
         fn(roomExists(roomId))
     })
-
+    
 })
 
 
@@ -70,51 +64,44 @@ function joinRoom(socket, data) {
         // Client's username saved in socket
         socket.username = data.username
         socket.room = data.room
-        // Tell everyone that user has created/joined room
         const exists = roomExists(data.room.id)
         const serverMessage = welcomeMessage(data.room, exists)
-
-
+        // Tell everyone that user has created/joined room
         io.to(data.room.id).emit(
             'update chat', {
             username: socket.username,
             message: serverMessage
         })
-        // Add event for messages
+        // Add new open room to list of rooms if not already included
+        roomExists(data.room.id) ? null : rooms.push(data.room)
+        // When user leaves chat room
+        socket.on("disconnect", () => {
+            console.log(socket.username + " has disconnected from " + data.room.id)
+            for (let u = 0; u < rooms.length; u++) {
+                if (rooms[u].id === data.room.id) {
+                    rooms[u].usersOnline--;
+
+                    io.to(data.room.id).emit('update chat', { username: socket.username, message: " has left the room" })
+
+                    if (rooms[u].usersOnline <= 0 && rooms[u].id != "Admin" && rooms[u].id != "Public") {
+
+                        let removeTheName = rooms.findIndex(rooms => rooms[u] === rooms.id)
+                        console.log(removeTheName)
+                        rooms.splice(removeTheName, 1)
+                        socket.emit('update list')
+                    }
+                }
+            }
+        })
+        // Event for messages
         socket.on('message', (message) => {
             // Broadcast message to all clients in the room
             io.to(data.room.id).emit('update chat', { username: socket.username, message })
         })
 
-        socket.on("disconnect", () => {
-            console.log(socket.username + " has disconnected from " + data.room)
-
-            for (let u = 0; u < rooms.length; u++) {
-                if (rooms[u].id === data.room.id) {
-                    rooms[u].usersOnline --;
-
-                    io.to(data.room.id).emit('update chat', { username: socket.username, message: " has left the room" })
-
-
-                    if (rooms[u].usersOnline <= 0 && rooms[u].id != "Admin" && rooms[u].id != "Public") {
-
-                        let removeTheName = rooms.findIndex(rooms => rooms[u] === rooms.id)
-
-                        rooms.splice(removeTheName, 1)
-                    }
-
-
-                }
-            }
-        })
-
-        // Add new open room to list of rooms if not already included
-        roomExists(data.room.id) ? null : rooms.push(data.room)
-
-
         for (let i = 0; i < rooms.length; i++) {
             if (rooms[i].id === data.room.id) {
-                rooms[i].usersOnline ++;
+                rooms[i].usersOnline++;
                 console.log(rooms[i])
             }
         }
@@ -148,9 +135,6 @@ const welcomeMessage = (room, exists) => {
  * @returns {boolean} true or false
  */
 function roomExists(roomId) {
-
-    // TODO: lägg till funktion som tar bort (splice) rum när det är tomt här kanske?
-
     const exists = rooms.filter(room => room.id === roomId)
     if (exists.length >= 1) {
         return true;
@@ -159,4 +143,4 @@ function roomExists(roomId) {
     }
 }
 
-server.listen(3000, () => console.log('Server is running on http://localhost:3000'))
+server.listen(port, () => console.log(`Server is running on http://${host}:${port}`))
