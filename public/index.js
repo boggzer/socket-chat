@@ -217,6 +217,7 @@ function renderMenu() {
     if (document.querySelector('.chat').classList.contains('hidden') === false) {
         location.reload()
     }
+
     document.querySelector('.add-password').checked = false
     document.querySelectorAll('.room-name-input, .type-password-locked-room, .type-password').forEach(element => element.value = '')
     document.querySelector('h2').innerHTML = 'Hi there!<br /><span>Welcome to Socket Chat</span>'
@@ -224,6 +225,7 @@ function renderMenu() {
     document.querySelectorAll('form.create-room, .chat.ui, .password-field, .password-field-locked-room').forEach(element => element.classList.add('hidden'))
     fetchRooms()
     document.querySelector('.chat>span>h3').innerHTML = ''
+
 }
 
 /**
