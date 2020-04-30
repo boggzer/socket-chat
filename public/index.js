@@ -224,11 +224,8 @@ function onSendMessage() {
     event.preventDefault()
     const messageInput = document.querySelector('input.message-input')
     let message = messageInput.value
-    const { username } = socket
 
     if (event.type === 'keyup' && event.keyCode === 13 || event.type === 'click') {
-        clearTimeout(timeout)
-        typingTimeout()
         if (message === "") {
             return;
         } else {
@@ -243,31 +240,13 @@ function onSendMessage() {
  * @param {username} username message author
  * @param {message} message recieved message
  */
-function updateChat(socket) {
-    const { username, message, isTyping } = socket
-
+function updateChat({ username, message }) {
     const ul = document.getElementById("theMessageBoard")
     const li = document.createElement('li')
-
-    const typing = document.querySelector('.typing')
-
-    if (isTyping === true) {
-        typing.classList.remove('hidden')
-        typing.innerHTML = `${username} is typing...`
-        console.log('hellooo')
-    } else {
-        if (typing !== null) {
-            typing.classList.add('hidden')
-            typing.innerHTML = ''
-            console.log('noggg')
-            li.innerHTML = '<span class="user">' + username + ':</span> <span class="user-message">' + message + '</span>'
-            ul.append(li)
-        }
-        console.log('no')
-        li.innerHTML = '<span class="user">' + username + ':</span> <span class="user-message">' + message + '</span>'
-        ul.append(li)
-    }
+    li.innerHTML = '<span class="user">' + username + ':</span> <span class="user-message">' + message + '</span>'
+    ul.append(li)
 }
+
 
 /**
  * Renders create room form
@@ -324,14 +303,15 @@ function onJoinCreatedRoom(event) {
         if (username !== '' && roomName !== '') {
             room = new Room(roomName, username, 'open')
             socket.emit('join room', { username, room })
- console.log(room)
+            console.log(room)
         } else { alert(`Looks like you forgot to enter your ${roomName === '' ? 'room name.' : 'username.'}`) }
-       
+
     }
 }
 
 function loadChatUI(socket) {
-    const ul = document.getElementById("theMessageBoard")
+    let ul = document.getElementById("theMessageBoard")
+    ul.innerHTML = ''
     const li = document.createElement('li')
     li.classList.add('typing', 'hidden')
     ul.append(li)
