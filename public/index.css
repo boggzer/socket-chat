@@ -35,6 +35,10 @@ form {
     margin-bottom: 10px;
 }
 
+input:not(input.message-input) {
+    width: calc(100% - 2rem);
+}
+
 input {
     margin-bottom: .5rem;
     padding: .8rem 1rem;
@@ -195,19 +199,41 @@ span.error-message {
     overflow: auto;
 }
 
+table {
+    width: 100%;
+}
+
+tbody {
+    display: flex;
+    justify-content: center;
+}
+
+tr.roomTag > th {
+    font-weight: 500;
+}
+
 .allRoomsLocked, .allRoomsUnlocked {
     display: flex;
     flex-direction: column;
     padding: 5px;
+    width: 80%;
 }
 
-
-.roomTag {
-border: 2px solid red;
+.allRoomsLocked {
+    background-image: url(./assets/icons8locked.png);
+    background-size: 20px;
+    display:inline-block;
+    line-height:24px;
+    background-repeat:no-repeat;
+    background-position: 0 calc(50% - 2.5px);
+    vertical-align:middle;
+    cursor:pointer;
 }
 
-.join-existing-room div {
+.join-existing-room div, .join-existing-room {
     display: flex;
+    justify-content: center;
+    align-content: center;
 }
 
 .join-created-room {

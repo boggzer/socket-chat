@@ -5,8 +5,7 @@ setInterval(function () {
     }).then((rooms) => {
         printRooms(rooms)
     })
-}, 1000);
-
+}, 2000)
 
 const socket = io()
 class Room {
@@ -89,7 +88,7 @@ function setupEventListeners() {
     roomInput.addEventListener('blur', checkIfRoomExists)
 
     // Back to menu buttons
-    const backToMenuButton = document.querySelectorAll('button.back')
+    const backToMenuButton = document.querySelectorAll('button.back, .back-img')
     backToMenuButton.forEach((button) => {
         button.addEventListener('click', loadMenu)
     })
@@ -97,6 +96,7 @@ function setupEventListeners() {
     // Send message when enter is pressed in input field
     const messageInput = document.querySelector('input.message-input')
     messageInput.addEventListener('keyup', onSendMessage)
+    messageInput.addEventListener('keypress', onIsTyping)
 
     // Send message when send button is clicked or enter is pressed when button in focus
     const sendMessageButton = document.querySelector('button.message-input')
@@ -197,19 +197,40 @@ function printRooms(rooms) {
     })
 }
 
+function onIsTyping(event) {
+    let isTyping = false
+    let typingTimeout = () => { isTyping = false; console.log('not typing timeout') }
+    let timeout;
+
+    const message = `is typing...`
+
+    if (isTyping === false || event.keyCode !== 13) {
+        isTyping = true
+        socket.emit('is typing', { message, isTyping })
+        timeout = setTimeout(typingTimeout, 3000);
+        console.log('typing')
+    } else {
+        clearTimeout(timeout);
+        timeout = setTimeout(typingTimeout, 3000);
+        console.log('not typing')
+    }
+}
+
 /**
  * Sends message to server
  * @param {Event} event 
  */
-function onSendMessage(event) {
+function onSendMessage() {
     event.preventDefault()
     const messageInput = document.querySelector('input.message-input')
-    const message = messageInput.value
+    let message = messageInput.value
+    const { username } = socket
 
     if (event.type === 'keyup' && event.keyCode === 13 || event.type === 'click') {
+        clearTimeout(timeout)
+        typingTimeout()
         if (message === "") {
             return;
-            // TODO: add error message if message is empty
         } else {
             socket.emit('message', message)
             messageInput.value = ''
@@ -222,11 +243,30 @@ function onSendMessage(event) {
  * @param {username} username message author
  * @param {message} message recieved message
  */
-function updateChat({ username, message }) {
+function updateChat(socket) {
+    const { username, message, isTyping } = socket
+
     const ul = document.getElementById("theMessageBoard")
     const li = document.createElement('li')
-    li.innerText = `${username}: ${message}`
-    ul.append(li)
+
+    const typing = document.querySelector('.typing')
+
+    if (isTyping === true) {
+        typing.classList.remove('hidden')
+        typing.innerHTML = `${username} is typing...`
+        console.log('hellooo')
+    } else {
+        if (typing !== null) {
+            typing.classList.add('hidden')
+            typing.innerHTML = ''
+            console.log('noggg')
+            li.innerHTML = '<span class="user">' + username + ':</span> <span class="user-message">' + message + '</span>'
+            ul.append(li)
+        }
+        console.log('no')
+        li.innerHTML = '<span class="user">' + username + ':</span> <span class="user-message">' + message + '</span>'
+        ul.append(li)
+    }
 }
 
 /**
@@ -289,20 +329,25 @@ function onJoinCreatedRoom(event) {
 }
 
 function loadChatUI(socket) {
+    const ul = document.getElementById("theMessageBoard")
+    const li = document.createElement('li')
+    li.classList.add('typing', 'hidden')
+    ul.append(li)
     document.querySelectorAll('.join, form.create-room, .join.ui, .join-room').forEach(element => element.classList.add('hidden'))
     document.querySelector(".chat.ui").classList.remove("hidden")
-    document.querySelector('.chat>h3').innerHTML = socket
+    document.querySelector('.chat>span>h3').innerHTML = socket
 }
 
 function loadMenu() {
+    if (document.querySelector('.chat').classList.contains('hidden') === false) {
+        socket.emit('leave room', socket.username)
+    }
     document.querySelector('.add-password').checked = false
-    document.querySelector('.room-name-input').value = ''
-    document.querySelector('.type-password-locked-room').value = ''
-    document.querySelector('.type-password').value = ''
+    document.querySelectorAll('.room-name-input, .type-password-locked-room, .type-password').forEach(element => element.value = '')
     document.querySelector('h2').innerHTML = 'Hi there!<br /><span>Welcome to Socket Chat</span>'
     document.querySelectorAll('.join-room, button.create-room, .join-existing-room, .join.ui, .join').forEach(element => element.classList.remove('hidden'))
-    document.querySelectorAll('form.create-room, .chat.ui, .password-field').forEach(element => element.classList.add('hidden'))
-    document.querySelector('.chat>h3').innerHTML = ''
+    document.querySelectorAll('form.create-room, .chat.ui, .password-field, .password-field-locked-room').forEach(element => element.classList.add('hidden'))
+    document.querySelector('.chat>span>h3').innerHTML = ''
 }
 
 /*
