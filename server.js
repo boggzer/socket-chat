@@ -86,7 +86,6 @@ function joinRoom(socket, data) {
                     if (rooms[u].usersOnline <= 0 && rooms[u].id != "Admin" && rooms[u].id != "Public") {
 
                         let removeTheName = rooms.findIndex(rooms => rooms[u] === rooms.id)
-                        console.log(removeTheName)
                         rooms.splice(removeTheName, 1)
                         socket.emit('update list')
                     }
@@ -102,7 +101,6 @@ function joinRoom(socket, data) {
         for (let i = 0; i < rooms.length; i++) {
             if (rooms[i].id === data.room.id) {
                 rooms[i].usersOnline++;
-                console.log(rooms[i])
             }
         }
     })
