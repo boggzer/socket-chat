@@ -26,6 +26,10 @@ form {
     flex-direction: column;
 }
 
+.back-img {
+    display: none;
+}
+
 .css-label {
     font-size: 18px;
     margin-bottom: 10px;
@@ -37,9 +41,10 @@ input {
     border: none;
     border-radius: 8px;
     font-size: 1.5rem;
+    min-width: 175px;
 }
 
-button {
+button, .back-img {
     font-size: 1.2rem;
     border-radius: 8px;
     border: none;
@@ -55,14 +60,32 @@ button {
 
 .chat.ui {
     display: flex;
-    height: 100%;
+    height: calc(100% - 50px);
     width: 100%;
-    transition: 2s all ease;;
+    margin-bottom: 50px;
+    transition: 2s all ease;
+    justify-self: flex-start;
     flex-direction: column;
+}
+
+.chat.ui > span {
+    display: flex;
+}
+
+.chat.ui > span > button {
+    flex: 1;
+}
+
+.chat.ui > span > h3 {
+    flex: 9;
 }
 
 .chat.ui ul {
     flex: 1
+}
+
+li {
+    width: 100%;
 }
 
 .chat.ui form {
@@ -71,16 +94,42 @@ button {
     justify-content: center;
 }
 
-#theMessageBoard {
-    height: auto;
-    width: 70%;
-    min-width: 50%;
-    margin: 25px auto;
+.chat button.back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 15px;
 }
+
+.user {
+    font-weight: 500;
+}
+
+#theMessageBoard {
+    max-height: 80vh;
+    overflow: scroll;
+    width: 80%;
+    max-width: 450px;
+    padding: 1rem;
+    border-radius: 15px;
+    background-color: whitesmoke;
+    min-width: calc(50% - 300px);
+    margin: 20px auto;
+    font-size: 17px;
+}
+
+.room-name {
+    color: whitesmoke;
+}
+
 h2 span {
     margin: 0;
     padding: 0;
     font-size: 20px;
+}
+
+.message-form, .message-input {
+    margin: 1%;
 }
 
 div.join {
@@ -90,11 +139,13 @@ div.join {
     min-width: 225px;
     background-color: whitesmoke;
     border-radius: 15px;
-    padding: 10px 32px 27px 32px;
+    padding: 10px 20px 15px 20px;
     margin: 10px;
 }
 
 ul {
+    width: 100%;
+    padding: 50px;
     list-style: none;
 }
 

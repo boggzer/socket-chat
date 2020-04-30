@@ -1,0 +1,12 @@
+@media only screen and (max-width: 500px) {
+    .back-img {
+        position: absolute;
+        display: flex;
+        width: 24px;
+        height: 24px;
+        margin: 15px;
+    }
+    .chat button.back {
+        display: none;
+    }
+  }
