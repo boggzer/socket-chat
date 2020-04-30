@@ -9,17 +9,11 @@ const io = socketIO(server)
 // Lite statuskoder, kanske inte ska använda dessa sen
 const statusCode = require('./public/status-codes.js')
 
-// Exempel på användare
-const users = [
-    { id: 'Foo', room: 'fooroom' },
-    { id: 'Bar', room: 'barroom' },
-    { id: 'Foobar', room: 'fooroom' }
-];
 
 // Exempel på rum
 const rooms = [
-    { id: 'Admin', usersOnline: ['Foo', 'Foobar'], isOpen: false, password: 'admin' },
-    { id: 'Public', usersOnline: ['Bar'], isOpen: true },
+    { id: 'Admin', usersOnline: [0], isOpen: false, password: 'admin' },
+    { id: 'Public', usersOnline: [0], isOpen: true },
 ];
 
 app.use(express.static('public'))
@@ -60,7 +54,9 @@ io.on('connection', (socket) => {
     socket.on('check if exists', (roomId, fn) => {
         fn(roomExists(roomId))
     })
+
 })
+
 
 /**
  * Main function for joining/creating any room
@@ -77,6 +73,7 @@ function joinRoom(socket, data) {
         const exists = roomExists(data.room.id)
         const serverMessage = welcomeMessage(data.room, exists)
 
+
         io.to(data.room.id).emit(
             'update chat', {
             username: socket.username,
@@ -88,8 +85,38 @@ function joinRoom(socket, data) {
             io.to(data.room.id).emit('update chat', { username: socket.username, message })
         })
 
+        socket.on("disconnect", () => {
+            console.log(socket.username + " has disconnected from " + data.room)
+
+            for (let u = 0; u < rooms.length; u++) {
+                if (rooms[u].id === data.room.id) {
+                    rooms[u].usersOnline --;
+
+                    io.to(data.room.id).emit('update chat', { username: socket.username, message: " has left the room" })
+
+
+                    if (rooms[u].usersOnline <= 0 && rooms[u].id != "Admin" && rooms[u].id != "Public") {
+
+                        let removeTheName = rooms.findIndex(rooms => rooms[u] === rooms.id)
+
+                        rooms.splice(removeTheName, 1)
+                    }
+
+
+                }
+            }
+        })
+
         // Add new open room to list of rooms if not already included
         roomExists(data.room.id) ? null : rooms.push(data.room)
+
+
+        for (let i = 0; i < rooms.length; i++) {
+            if (rooms[i].id === data.room.id) {
+                rooms[i].usersOnline ++;
+                console.log(rooms[i])
+            }
+        }
     })
 }
 
