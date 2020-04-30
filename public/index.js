@@ -205,6 +205,7 @@ function renderMessage({ username, message }) {
  * @param {object} socket 
  */
 function renderChat(socket) {
+    document.querySelector('input[type="checkbox"]').checked = false
     let ul = document.getElementById("theMessageBoard")
     ul.innerHTML = ''
     document.querySelectorAll('.join, form.create-room, .join.ui, .join-room').forEach(element => element.classList.add('hidden'))
@@ -218,8 +219,8 @@ function renderMenu() {
         location.reload()
     }
 
-    document.querySelector('.add-password').checked = false
     document.querySelectorAll('.room-name-input, .type-password-locked-room, .type-password').forEach(element => element.value = '')
+    document.querySelector('input[type="checkbox"]').checked = false
     document.querySelector('h2').innerHTML = 'Hi there!<br /><span>Welcome to Socket Chat</span>'
     document.querySelectorAll('.join-room, button.create-room, .join-existing-room, .join.ui, .join').forEach(element => element.classList.remove('hidden'))
     document.querySelectorAll('form.create-room, .chat.ui, .password-field, .password-field-locked-room').forEach(element => element.classList.add('hidden'))
