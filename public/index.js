@@ -10,7 +10,7 @@ const socket = io()
 class Room {
     constructor(id, usersOnline, isOpen, password) {
         this.id = id;
-        this.usersOnline = [].push(usersOnline);
+        this.usersOnline = 0;
         this.isOpen = this.translateToBoolean(isOpen);
         this.password = password;
     }
@@ -40,10 +40,10 @@ function addClickToRooms() {
         unlockedRoomTable[i].addEventListener("click", () => {
 
             for (let y = 0; y < unlockedRoomTable.length; y++) {
-                unlockedRoomTable[y].style.backgroundColor = "rgb(55, 209, 183)"
+                unlockedRoomTable[y].style.backgroundColor = "#222222"
             }
             for (let o = 0; o < lockedRoomTable.length; o++) {
-                lockedRoomTable[o].style.backgroundColor = "rgb(55, 209, 183)"
+                lockedRoomTable[o].style.backgroundColor = "#222222"
             }
 
             roomChosen = unlockedRoomTable[i].innerHTML;
@@ -56,10 +56,10 @@ function addClickToRooms() {
         lockedRoomTable[i].addEventListener("click", () => {
 
             for (let y = 0; y < lockedRoomTable.length; y++) {
-                lockedRoomTable[y].style.backgroundColor = "rgb(55, 209, 183)"
+                lockedRoomTable[y].style.backgroundColor = "#222222"
             }
             for (let o = 0; o < unlockedRoomTable.length; o++) {
-                unlockedRoomTable[o].style.backgroundColor = "rgb(55, 209, 183)"
+                unlockedRoomTable[o].style.backgroundColor = "#222222"
             }
 
             roomChosen = lockedRoomTable[i].innerHTML;
@@ -138,7 +138,6 @@ function onJoinRoom(event) {
         alert("Please choose a room")
     }
     else {
-        
         socket.emit('join room', { username, room })
     }
 }
@@ -254,7 +253,9 @@ function onJoinCreatedRoom(event) {
         return;
     } else {
         // Default (open) room
+        
         room = new Room(roomName, username, 'open')
+        console.log(room)
         socket.emit('join room', { username, room })
     }
 }
