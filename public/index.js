@@ -1,11 +1,10 @@
 // Rerenders lists of existing rooms every second in case it has changed
-setInterval(function () {
+
     fetch("http://localhost:3000/rooms").then((response) => {
         return response.json()
     }).then((rooms) => {
         printRooms(rooms)
     })
-}, 2000)
 
 const socket = io()
 class Room {
@@ -44,14 +43,14 @@ function addClickToRooms() {
             passwordField.classList.add('hidden')
 
             for (let y = 0; y < unlockedRoomTable.length; y++) {
-                unlockedRoomTable[y].style.backgroundColor = "#222222"
+                unlockedRoomTable[y].style.border = "none"
             }
             for (let o = 0; o < lockedRoomTable.length; o++) {
-                lockedRoomTable[o].style.backgroundColor = "#222222"
+                lockedRoomTable[o].style.border = "none"
             }
 
             roomChosen = unlockedRoomTable[i].innerHTML;
-            unlockedRoomTable[i].style.backgroundColor = "red"
+            unlockedRoomTable[i].style.border = "2px solid red"
 
         })
     }
@@ -62,14 +61,14 @@ function addClickToRooms() {
             passwordField.classList.remove('hidden')
 
             for (let y = 0; y < lockedRoomTable.length; y++) {
-                lockedRoomTable[y].style.backgroundColor = "#222222"
+                lockedRoomTable[y].style.border = "none"
             }
             for (let o = 0; o < unlockedRoomTable.length; o++) {
-                unlockedRoomTable[o].style.backgroundColor = "#222222"
+                unlockedRoomTable[o].style.border = "none"
             }
 
             roomChosen = lockedRoomTable[i].innerHTML;
-            lockedRoomTable[i].style.backgroundColor = "red"
+            lockedRoomTable[i].style.border = "2px solid red"
 
         })
     }
