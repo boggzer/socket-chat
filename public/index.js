@@ -273,6 +273,7 @@ function onError(errorType) {
 
 /** Add event listener to main DOM elements */
 function setupEventListeners() {
+    document.querySelector('input[type="checkbox"]').checked = false
     // Join submit handler
     const joinForm = document.querySelector('form.join-existing-room')
     joinForm.addEventListener('submit', onJoinRoom)
