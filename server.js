@@ -85,7 +85,7 @@ function joinRoom(socket, data) {
 
                     if (rooms[u].usersOnline <= 0 && rooms[u].id != "Admin" && rooms[u].id != "Public") {
 
-                        let removeTheName = rooms.findIndex(rooms => rooms[u] === rooms.id)
+                        let removeTheName = rooms.findIndex(room => room.id === data.room.id)
                         rooms.splice(removeTheName, 1)
                         socket.emit('update list')
                     }
