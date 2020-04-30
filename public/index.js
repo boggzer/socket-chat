@@ -1,10 +1,11 @@
-
-
-fetch("http://localhost:3000/rooms").then((response) => {
-    return response.json()
-}).then((rooms) => {
-    printRooms(rooms)
-})
+// Rerenders lists of existing rooms every second in case it has changed
+setInterval(function () {
+    fetch("http://localhost:3000/rooms").then((response) => {
+        return response.json()
+    }).then((rooms) => {
+        printRooms(rooms)
+    })
+}, 2000)
 
 const socket = io()
 class Room {
@@ -16,7 +17,7 @@ class Room {
     }
 
     translateToBoolean(isOpen) {
-        if (isOpen === 'open') {
+        if (isOpen === 'open' || isOpen === 'true' || isOpen === true || isOpen === 'unlocked') {
             return true;
         } else {
             return false;
@@ -35,9 +36,12 @@ window.addEventListener('load', () => {
 function addClickToRooms() {
     let unlockedRoomTable = document.getElementsByClassName("allRoomsUnlocked");
     let lockedRoomTable = document.getElementsByClassName("allRoomsLocked");
+    const passwordField = document.querySelector('.password-field-locked-room')
 
     for (let i = 0; i < unlockedRoomTable.length; i++) {
         unlockedRoomTable[i].addEventListener("click", () => {
+
+            passwordField.classList.add('hidden')
 
             for (let y = 0; y < unlockedRoomTable.length; y++) {
                 unlockedRoomTable[y].style.backgroundColor = "#222222"
@@ -55,6 +59,8 @@ function addClickToRooms() {
     for (let i = 0; i < lockedRoomTable.length; i++) {
         lockedRoomTable[i].addEventListener("click", () => {
 
+            passwordField.classList.remove('hidden')
+
             for (let y = 0; y < lockedRoomTable.length; y++) {
                 lockedRoomTable[y].style.backgroundColor = "#222222"
             }
@@ -68,7 +74,7 @@ function addClickToRooms() {
         })
     }
 
-    
+
 }
 
 function setupEventListeners() {
@@ -81,9 +87,16 @@ function setupEventListeners() {
     roomInput.addEventListener('input', checkIfRoomExists)
     roomInput.addEventListener('blur', checkIfRoomExists)
 
+    // Back to menu buttons
+    const backToMenuButton = document.querySelectorAll('button.back, .back-img')
+    backToMenuButton.forEach((button) => {
+        button.addEventListener('click', loadMenu)
+    })
+
     // Send message when enter is pressed in input field
     const messageInput = document.querySelector('input.message-input')
     messageInput.addEventListener('keyup', onSendMessage)
+    // messageInput.addEventListener('keypress', onIsTyping)
 
     // Send message when send button is clicked or enter is pressed when button in focus
     const sendMessageButton = document.querySelector('button.message-input')
@@ -138,23 +151,34 @@ function onJoinRoom(event) {
         alert("Please choose a room")
     }
     else {
-        socket.emit('join room', { username, room })
+        if (username !== '') {
+            if (room.isOpen === true) {
+                socket.emit('join room', { username, room })
+            } else {
+                const passwordInput = document.querySelector('.type-password-locked-room')
+                const password = passwordInput.value
+                const room = new Room(roomChosen, username, roomLocked, password);
+                socket.emit('verify locked room', { username, room })
+            }
+        } else { alert('Please enter a username') }
     }
 }
 
 function printRooms(rooms) {
 
+
     let unlockedRoomTable = document.querySelector(".unlockedRoomTable")
     let lockedRoomTable = document.querySelector(".lockedRoomTable")
+    unlockedRoomTable.innerHTML = '<tr class="roomTag"><th>Unlocked Rooms</th></tr>'
+    lockedRoomTable.innerHTML = '<tr class="roomTag"><th>Locked Rooms</th></tr>'
 
-    
     rooms.forEach(rooms => {
         if (rooms.isOpen) {
             let roomBox = document.createElement("th")
             let room = document.createElement("th")
             room.innerText = rooms.id
             room.className = "allRoomsUnlocked"
-    
+
             roomBox.appendChild(room)
             unlockedRoomTable.appendChild(roomBox)
         }
@@ -163,7 +187,7 @@ function printRooms(rooms) {
             let room = document.createElement("th")
             room.innerText = rooms.id
             room.className = "allRoomsLocked"
-    
+
             roomBox.appendChild(room)
             lockedRoomTable.appendChild(roomBox)
         }
@@ -173,19 +197,37 @@ function printRooms(rooms) {
     })
 }
 
+function onIsTyping(event) {
+    let isTyping = false
+    let typingTimeout = () => { isTyping = false; console.log('not typing timeout') }
+    let timeout;
+
+    const message = `is typing...`
+
+    if (isTyping === false || event.keyCode !== 13) {
+        isTyping = true
+        socket.emit('is typing', { message, isTyping })
+        timeout = setTimeout(typingTimeout, 3000);
+        console.log('typing')
+    } else {
+        clearTimeout(timeout);
+        timeout = setTimeout(typingTimeout, 3000);
+        console.log('not typing')
+    }
+}
+
 /**
  * Sends message to server
  * @param {Event} event 
  */
-function onSendMessage(event) {
+function onSendMessage() {
     event.preventDefault()
     const messageInput = document.querySelector('input.message-input')
-    const message = messageInput.value
+    let message = messageInput.value
 
     if (event.type === 'keyup' && event.keyCode === 13 || event.type === 'click') {
         if (message === "") {
             return;
-            // TODO: add error message if message is empty
         } else {
             socket.emit('message', message)
             messageInput.value = ''
@@ -201,9 +243,10 @@ function onSendMessage(event) {
 function updateChat({ username, message }) {
     const ul = document.getElementById("theMessageBoard")
     const li = document.createElement('li')
-    li.innerText = `${username}: ${message}`
+    li.innerHTML = '<span class="user">' + username + ':</span> <span class="user-message">' + message + '</span>'
     ul.append(li)
 }
+
 
 /**
  * Renders create room form
@@ -211,8 +254,10 @@ function updateChat({ username, message }) {
  */
 function onCreateRoom(event) {
     event.preventDefault()
+    document.querySelector('h2').innerHTML = 'Create chat room'
     document.querySelector('form.create-room').classList.remove('hidden')
-    document.querySelectorAll('.join-existing-room, button.create-room').forEach(element => element.classList.add('hidden'))
+    document.querySelectorAll('.join-existing-room, button.create-room')
+        .forEach(element => element.classList.add('hidden'))
 }
 
 /**
@@ -235,36 +280,56 @@ function onJoinCreatedRoom(event) {
     event.preventDefault()
     const username = document.querySelector(".username-input").value
     const roomName = document.querySelector('.room-name-input').value
-    
+
     const passwordCheck = document.querySelector('.add-password').checked
     const passwordField = document.querySelector('.password-field')
-    
+
     let room;
 
     // If locked is checked and event is submit
     if (passwordCheck && event.type !== 'change') {
         const passwordInput = document.querySelector('.type-password')
         const password = passwordInput.value
-        room = new Room(roomName, username, 'locked', password)
-        // Verify locked room (if exists or not)
-        socket.emit('verify locked room', { username, room })
+        if (username !== '' && roomName !== '') {
+            room = new Room(roomName, username, 'locked', password)
+            // Verify locked room (if exists or not)
+            socket.emit('verify locked room', { username, room })
+        } else { alert(`Looks like you forgot to enter your ${roomName === '' ? 'room name.' : 'username.'}`) }
     } else if (event.type == 'change') {
         toggleDisplay(passwordField)
         return;
     } else {
         // Default (open) room
-        
-        room = new Room(roomName, username, 'open')
-        console.log(room)
-        socket.emit('join room', { username, room })
+        if (username !== '' && roomName !== '') {
+            room = new Room(roomName, username, 'open')
+            socket.emit('join room', { username, room })
+            console.log(room)
+        } else { alert(`Looks like you forgot to enter your ${roomName === '' ? 'room name.' : 'username.'}`) }
+
     }
 }
 
-function loadChatUI() {
-    document.querySelector('form.create-room').classList.add('hidden')
+function loadChatUI(socket) {
+    let ul = document.getElementById("theMessageBoard")
+    ul.innerHTML = ''
+    const li = document.createElement('li')
+    li.classList.add('typing', 'hidden')
+    ul.append(li)
+    document.querySelectorAll('.join, form.create-room, .join.ui, .join-room').forEach(element => element.classList.add('hidden'))
     document.querySelector(".chat.ui").classList.remove("hidden")
-    document.querySelector(".join.ui").classList.add("hidden")
-    document.querySelector(".join-room").classList.add("hidden")
+    document.querySelector('.chat>span>h3').innerHTML = socket
+}
+
+function loadMenu() {
+    if (document.querySelector('.chat').classList.contains('hidden') === false) {
+        socket.emit('leave room', socket.username)
+    }
+    document.querySelector('.add-password').checked = false
+    document.querySelectorAll('.room-name-input, .type-password-locked-room, .type-password').forEach(element => element.value = '')
+    document.querySelector('h2').innerHTML = 'Hi there!<br /><span>Welcome to Socket Chat</span>'
+    document.querySelectorAll('.join-room, button.create-room, .join-existing-room, .join.ui, .join').forEach(element => element.classList.remove('hidden'))
+    document.querySelectorAll('form.create-room, .chat.ui, .password-field, .password-field-locked-room').forEach(element => element.classList.add('hidden'))
+    document.querySelector('.chat>span>h3').innerHTML = ''
 }
 
 /*

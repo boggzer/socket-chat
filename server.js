@@ -66,9 +66,10 @@ io.on('connection', (socket) => {
 function joinRoom(socket, data) {
     socket.join(data.room.id, () => {
         // Respond to client that join was successful
-        io.to(socket.id).emit('join successful', 'success')
+        io.to(socket.id).emit('join successful', data.room.id)
         // Client's username saved in socket
-        socket.username = data.username;
+        socket.username = data.username
+        socket.room = data.room
         // Tell everyone that user has created/joined room
         const exists = roomExists(data.room.id)
         const serverMessage = welcomeMessage(data.room, exists)
