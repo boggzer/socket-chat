@@ -96,7 +96,7 @@ function setupEventListeners() {
     // Send message when enter is pressed in input field
     const messageInput = document.querySelector('input.message-input')
     messageInput.addEventListener('keyup', onSendMessage)
-    messageInput.addEventListener('keypress', onIsTyping)
+    // messageInput.addEventListener('keypress', onIsTyping)
 
     // Send message when send button is clicked or enter is pressed when button in focus
     const sendMessageButton = document.querySelector('button.message-input')
